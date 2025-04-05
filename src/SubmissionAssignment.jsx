@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Form, Button, Alert, Modal } from "react-bootstrap";
 import { FaUpload, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
@@ -12,6 +12,34 @@ const AssignmentSubmission = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [responseData, setResponseData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [assignmentDetails, setAssignmentDetails] = useState(null);
+
+  // Fetch assignment details
+  useEffect(() => {
+    const fetchAssignment = async () => {
+      const authToken = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("authToken="))
+        ?.split("=")[1];
+  
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/assignment/assignments/${assignmentId}`,
+          {
+            headers: {
+              "x-auth-token": authToken,
+            },
+          }
+        );
+        setAssignmentDetails(response.data);
+      } catch (error) {
+        console.error("Failed to fetch assignment details:", error);
+      }
+    };
+  
+    fetchAssignment();
+  }, [assignmentId]);
+  ;
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -23,6 +51,7 @@ const AssignmentSubmission = () => {
       setStatus("error");
       return;
     }
+
     setLoading(true);
     const formData = new FormData();
     formData.append("file", file);
@@ -48,8 +77,10 @@ const AssignmentSubmission = () => {
       setStatus("success");
       setShowPopup(true);
     } catch (error) {
+      console.error("Submission failed:", error);
       setStatus("error");
     }
+
     setLoading(false);
   };
 
@@ -57,23 +88,38 @@ const AssignmentSubmission = () => {
     <Container className="mt-5 p-4 shadow-lg bg-light rounded" style={{ maxWidth: "600px" }}>
       <h3 className="text-center text-danger">📚 Assignment Submission</h3>
       <hr />
-      <p><strong>Assignment:</strong> AI Fundamentals Report</p>
-      <p><strong>Due Date:</strong> April 5, 2025</p>
-      <p><strong>Instructions:</strong> Submit a PDF or DOCX file.</p>
+
+      {assignmentDetails ? (
+        <>
+          <p><strong>Title:</strong> {assignmentDetails.title}</p>
+          <p><strong>Description:</strong> {assignmentDetails.description}</p>
+          <p><strong>Subject:</strong> {assignmentDetails.subject}</p>
+          <p>
+            <strong>Due Date:</strong>{" "}
+            {new Date(assignmentDetails.dueDate).toLocaleDateString()}
+          </p>
+        </>
+      ) : (
+        <Alert variant="info">Loading assignment details...</Alert>
+      )}
+
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="fileUpload" className="mb-3">
           <Form.Label><FaUpload /> Upload Your Assignment</Form.Label>
-          <Form.Control type="file" accept=".jpg,.png,.jpeg" onChange={handleFileChange} />
+          <Form.Control type="file" accept=".jpg,.png,.jpeg,.pdf,.docx" onChange={handleFileChange} />
         </Form.Group>
         <Button variant="success" type="submit" className="w-100" disabled={loading}>
           {loading ? "Submitting..." : "Submit Assignment"}
         </Button>
       </Form>
+
       {status === "error" && (
-        <Alert variant="danger" className="mt-3">Please upload a file before submitting.</Alert>
+        <Alert variant="danger" className="mt-3">
+          {file ? "Submission failed. Try again." : "Please upload a file before submitting."}
+        </Alert>
       )}
 
-      {/* Popup for Success Response */}
+      {/* Success Popup */}
       <Modal show={showPopup} onHide={() => setShowPopup(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Assignment Submission Status</Modal.Title>

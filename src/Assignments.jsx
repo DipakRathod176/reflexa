@@ -145,10 +145,15 @@ const CreateAssignment = () => {
                 <td>{assign.description}</td>
                 <td>{assign.subject}</td>
                 <td>{new Date(assign.dueDate).toLocaleDateString()}</td>
-                <td><Link to={`/assignments/submission/${assign._id}`}>
-                <button>Submission</button>
+                {userData.role === 'admin' ? <td><Link to={`/assignments/get-all-submissions/${assign._id}`}>
+                  <button>View All Submissions</button>
                 </Link>
-                </td>
+                </td> :
+                  <td><Link to={`/assignments/submission/${assign._id}`}>
+                    <button>Submission</button>
+                  </Link>
+                  </td>
+                }
               </tr>
             ))}
           </tbody>

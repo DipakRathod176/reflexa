@@ -1,18 +1,30 @@
 import React from "react";
-import './sidebar.css'
+import './sidebar.css';
+import { Link, useNavigate } from "react-router-dom";
+
 const Offcanvas = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Delete the authToken cookie
+    document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    
+    // Redirect to login
+    navigate("/login");
+  };
+
   return (
     <div>
       {/* Button to toggle Offcanvas */}
       <button
-      style={{background:'white',border:'none'}}
-      className="sidebar-toggle-btn"
+        style={{ background: 'white', border: 'none' }}
+        className="sidebar-toggle-btn"
         type="button"
         data-bs-toggle="offcanvas"
         data-bs-target="#staticBackdrop"
         aria-controls="staticBackdrop"
       >
-        <i class="fa-solid fa-bars"></i>
+        <i className="fa-solid fa-bars"></i>
       </button>
 
       {/* Offcanvas Component */}
@@ -25,7 +37,7 @@ const Offcanvas = () => {
       >
         <div className="offcanvas-header">
           <h5 className="offcanvas-title" id="staticBackdropLabel">
-            Offcanvas
+            Menu
           </h5>
           <button
             type="button"
@@ -35,7 +47,17 @@ const Offcanvas = () => {
           ></button>
         </div>
         <div className="offcanvas-body">
-          <div>I will not close if you click outside of me.</div>
+          <Link to="/dashboard">
+          <div>HOME</div>
+          </Link>
+
+          {/* Logout Button */}
+          <button
+            className="btn btn-danger mt-4"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
         </div>
       </div>
     </div>

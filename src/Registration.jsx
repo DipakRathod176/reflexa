@@ -1,80 +1,124 @@
-// src/components/StudentRegistration.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Cookies from "js-cookie"; // Import js-cookie to handle cookies
+import Cookies from "js-cookie";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-
-const StudentRegistration = () => {
+const StudentSignup = () => {
   const [name, setName] = useState("");
+  const [role, setRole] = useState("student");
+  const [studentClass, setStudentClass] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
-  const handleRegister = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+
+    const authToken = Cookies.get("authToken"); // Get token from cookies
+
+    if (!authToken) {
+      toast.error("Unauthorized: Admin token not found.");
+      return;
+    }
+
+    const payload = {
+      name,
+      email,
+      password,
+      role,
+    };
+
+    if (role === "student") {
+      payload.classs = studentClass;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:3000/api/auth/register",
-        { name, email, password }
+        payload,
+        {
+          headers: {
+            "x-auth-token": authToken,
+          },
+        }
       );
 
-      const { token } = response.data; // Extract token from response
-
-      if (token) {
-        Cookies.set("authToken", token, { expires: 7, secure: true }); // Store token in cookies for 7 days
-        console.log("Registered successfully! Token stored.");
-        alert("Registration successful! You can now log in.");
-        navigate("/student-login");
-      } else {
-        alert("Registration successful, but no token received.");
-      }
+      toast.success("Registration successful!");
     } catch (error) {
-      console.error("Registration failed:", error);
-      alert("Registration failed. Please try again.");
+      console.error("Signup error:", error);
+      toast.error("Signup error: " + (error.response?.data?.message || "Something went wrong"));
     }
   };
 
   return (
-    <div className="login-page">
-      <div className="overlay"></div>
-      <div className="content">
-        <div className="login-box">
-          <h2>Student Registration</h2>
-          <form onSubmit={handleRegister}>
-            <div className="input-group">
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-secondary">
+      <ToastContainer />
+      <div className="card shadow-lg p-4 text-center" style={{ width: "400px" }}>
+        <h2 className="mb-4">User Signup</h2>
+        <form onSubmit={handleSignup}>
+          <div className="mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <select
+              className="form-control"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="student">Student</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          {role === "student" && (
+            <div className="mb-3">
               <input
                 type="text"
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                className="form-control"
+                placeholder="Class (e.g., 10-A)"
+                value={studentClass}
+                onChange={(e) => setStudentClass(e.target.value)}
                 required
               />
             </div>
-            <div className="input-group">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="input-group">
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit">Register</button>
-          </form>
-        </div>
+          )}
+
+          <div className="mb-3">
+            <input
+              type="email"
+              className="form-control"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary w-100">Sign Up</button>
+        </form>
       </div>
     </div>
   );
 };
 
-export default StudentRegistration;
+export default StudentSignup;
