@@ -27,21 +27,12 @@ function AppContent() {
         {/* 🌟 Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/assignments" element={<Assignment />} />
+        <Route path="/assignments/submission/:assignmentId" element={<AssignmentSubmission />} />
+        <Route path="/assignments/get-all-submissions/:assignmentId" element={<AllSubmissions />} />
 
-        {/* 🔐 Protected Routes */}
-        {loggedin ? (
-          <>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/assignments" element={<Assignment />} />
-            <Route path="/assignments/submission/:assignmentId" element={<AssignmentSubmission />} />
-            <Route path="/assignments/get-all-submissions/:assignmentId" element={<AllSubmissions />} />
-          </>
-        ) : (
-          // 🔁 Redirect any protected route to /login if not logged in
-          <>
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </>
-        )}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </>
   );

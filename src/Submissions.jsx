@@ -3,8 +3,9 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import "./AllSubmissions.css";
-
+import { useAppContext } from "./context/AppContext";
 const AssignmentSubmissions = () => {
+  const {API_URL}=useAppContext()
   const { assignmentId } = useParams();
   const [submissions, setSubmissions] = useState([]);
 
@@ -18,7 +19,7 @@ const AssignmentSubmissions = () => {
         }
 
         const res = await axios.get(
-          `http://localhost:3000/api/assignment/getsubmission/${assignmentId}`,
+          `${API_URL}/api/assignment/getsubmission/${assignmentId}`,
           {
             headers: {
               "x-auth-token": token, // send with correct header name

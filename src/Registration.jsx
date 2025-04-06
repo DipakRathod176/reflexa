@@ -3,8 +3,9 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { useAppContext } from "./context/AppContext";
 const StudentSignup = () => {
+  const {API_URL}=useAppContext()
   const [name, setName] = useState("");
   const [role, setRole] = useState("student");
   const [studentClass, setStudentClass] = useState("");
@@ -34,7 +35,7 @@ const StudentSignup = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/register",
+        `${API_URL}/api/auth/register`,
         payload,
         {
           headers: {

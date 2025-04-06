@@ -5,7 +5,7 @@ import { useAppContext } from "./context/AppContext";
 import { Link } from "react-router-dom";
 
 const CreateAssignment = () => {
-  const { theme, userData } = useAppContext();
+  const { theme,API_URL, userData } = useAppContext();
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true); // ✅ Loading state
   const [showForm, setShowForm] = useState(false);
@@ -35,7 +35,7 @@ const CreateAssignment = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/assignment/assignments", {
+      const response = await fetch(`${API_URL}/api/assignment/assignments`, {
         headers: { "x-auth-token": token },
       });
       const data = await response.json();
@@ -63,7 +63,7 @@ const CreateAssignment = () => {
     if (!token) return alert("Auth token not found!");
 
     try {
-      const response = await fetch("http://localhost:3000/api/assignment/assignments", {
+      const response = await fetch(`${API_URL}/api/assignment/assignments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

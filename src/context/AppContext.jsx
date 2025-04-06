@@ -10,7 +10,7 @@ export const AppProvider = ({ children }) => {
   const [loggedin, setLogged] = useState(false);
   const [userData, setUserData] = useState({name:'xyz',email:'abc@xyz.com',role:'student'});
   const [loading, setLoading] = useState(true)
-
+  const API_URL=""
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -25,7 +25,7 @@ export const AppProvider = ({ children }) => {
           return;
         }
 
-        const response = await axios.get("http://localhost:3000/api/auth/profile", {
+        const response = await axios.get(`${API_URL}/api/auth/profile`, {
           headers: { "x-auth-token": token },
         });
 
@@ -43,7 +43,7 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   return (
-    <AppContext.Provider value={{ theme, userData, loggedin, setLogged, loading }}>
+    <AppContext.Provider value={{ theme,API_URL, userData, loggedin, setLogged, loading }}>
       {children}
     </AppContext.Provider>
   );

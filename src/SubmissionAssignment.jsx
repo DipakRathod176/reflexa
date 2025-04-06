@@ -4,8 +4,9 @@ import { Container, Form, Button, Alert, Modal } from "react-bootstrap";
 import { FaUpload, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-
+import { useAppContext } from "./context/AppContext";
 const AssignmentSubmission = () => {
+  const {API_URL}=useAppContext()
   const { assignmentId } = useParams();
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("");
@@ -24,7 +25,7 @@ const AssignmentSubmission = () => {
   
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/assignment/assignments/${assignmentId}`,
+          `${API_URL}/api/assignment/assignments/${assignmentId}`,
           {
             headers: {
               "x-auth-token": authToken,
@@ -63,7 +64,7 @@ const AssignmentSubmission = () => {
         ?.split("=")[1];
 
       const response = await axios.post(
-        `http://localhost:3000/api/assignment/assignments/${assignmentId}/submit`,
+        `${API_URL}/api/assignment/assignments/${assignmentId}/submit`,
         formData,
         {
           headers: {
